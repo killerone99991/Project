@@ -5,6 +5,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -122,6 +123,29 @@ public class FilmDAO {
         
         return score;
     }
+    
+    /**
+     * Gets film's score by ID
+     * 
+     * @param id The ID of film which use to get film's rating
+     * @param score The score of film which use to set film's score
+     * @return Float
+     * @throws SQLException 
+     */
+    public boolean setRatingById(int id, float score) throws SQLException {
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "INSERT INTO FilmRating (score) VALUES (?) WHERE film_id = " + String.valueOf(id);
+            
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setFloat(1, score);
+            
+            int rowsInserted = statement.executeUpdate();
+            
+            return rowsInserted > 0;
+        }
+        
+    }
 
     /**
      * Gets film by ID
@@ -154,7 +178,7 @@ public class FilmDAO {
             distributors = getDistributorsById(id);
         }
         
-        return new Film(title, releaseYear, videoPath, posterPath, genres, directors, distributors);
+        return new Film(id, title, releaseYear, videoPath, posterPath, genres, directors, distributors);
     }
 
     /**
@@ -182,7 +206,7 @@ public class FilmDAO {
                 List<String> directors = getDirectorsById(id);
                 List<String> distributors = getDistributorsById(id);
                 
-                films.add(new Film(title, releaseYear, videoPath, posterPath, genres, directors, distributors));
+                films.add(new Film(id, title, releaseYear, videoPath, posterPath, genres, directors, distributors));
             }
         }
 

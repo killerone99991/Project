@@ -20,7 +20,8 @@ public class Film {
     private List<String> directors;
     private List<String> distributors;
 
-    public Film(String title, int releaseYear, String videoPath, String posterPath, List<String> genres, List<String> directors, List<String> distributors) {
+    public Film(int id, String title, int releaseYear, String videoPath, String posterPath, List<String> genres, List<String> directors, List<String> distributors) {
+        this.id = id;
         this.title = title;
         this.releaseYear = releaseYear;
         this.videoPath = videoPath;
