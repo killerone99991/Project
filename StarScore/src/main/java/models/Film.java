@@ -11,6 +11,7 @@ import java.util.List;
  * @author
  */
 public class Film {
+    private int id;
     private String title;
     private int releaseYear;
     private String videoPath;
@@ -83,6 +84,14 @@ public class Film {
 
     public void setDistributors(List<String> distributors) {
         this.distributors = distributors;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
     
     
