@@ -129,13 +129,13 @@ public class FilmDAO {
      * 
      * @param id The ID of film which use to get film's rating
      * @param score The score of film which use to set film's score
-     * @return Float
+     * @return Boolean
      * @throws SQLException 
      */
     public boolean setRatingById(int id, float score) throws SQLException {
 
         try (Connection conn = DBConnection.getConnection()) {
-            String sql = "INSERT INTO FilmRating (score) VALUES (?) WHERE film_id = " + String.valueOf(id);
+            String sql = "UPDATE FilmRating SET score = ? WHERE film_id = " + String.valueOf(id);
             
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setFloat(1, score);
