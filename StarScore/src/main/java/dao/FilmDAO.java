@@ -37,7 +37,7 @@ public class FilmDAO {
         ArrayList<String> genres = new ArrayList<>();
     
         try (Connection conn = DBConnection.getConnection()) {
-            String sql = "SELECT name FROM Film JOIN Film_Genre ON Film.id = Film_Genre.film_id JOIN Genre ON Film_Genre.genre_id = Genre.id WHERE Genre.id = " + String.valueOf(id);
+            String sql = "SELECT name FROM Film JOIN Film_Genre ON Film.id = Film_Genre.film_id JOIN Genre ON Film_Genre.genre_id = Genre.id WHERE Film_Genre.film_id = " + String.valueOf(id);
             
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
