@@ -30,7 +30,7 @@ public class FilmDAO {
      * Gets film's genres by ID
      * 
      * @param id The ID of film which use to get film's genres
-     * @return String ArrayList
+     * @return ArrayList<String>
      * @throws SQLException 
      */
     public ArrayList<String> getGenresById(int id) throws SQLException {
@@ -54,14 +54,14 @@ public class FilmDAO {
      * Gets film's directors by ID
      * 
      * @param id The ID of film which use to get film's directors
-     * @return String ArrayList
+     * @return ArrayList<String>
      * @throws SQLException 
      */
     public ArrayList<String> getDirectorsById(int id) throws SQLException {
         ArrayList<String> directors = new ArrayList<>();
         
         try (Connection conn = DBConnection.getConnection()) {
-            String sql = "SELECT name FROM Film JOIN Film_Director ON Film.id = Film_Director.film_id JOIN Director ON Film_Director.director_id = Director.id WHERE Director.id = " + String.valueOf(id);
+            String sql = "SELECT name FROM Film JOIN Film_Director ON Film.id = Film_Director.film_id JOIN Director ON Film_Director.director_id = Director.id WHERE Film_Director.film_id = " + String.valueOf(id);
             
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
@@ -77,8 +77,8 @@ public class FilmDAO {
     /**
      * Gets film's distributors by ID
      * 
-     * @param id The ID of film which use to get film's distributors
-     * @return String ArrayList
+     * @param id The ID of distributor which use to get film's distributors
+     * @return ArrayList<String>
      * @throws SQLException 
      */
     public ArrayList<String> getDistributorsById(int id) throws SQLException {
@@ -129,7 +129,7 @@ public class FilmDAO {
      * 
      * @param id The ID of film which use to get film's rating
      * @param score The score of film which use to set film's score
-     * @return Boolean
+     * @return True if updated successfully, else false
      * @throws SQLException 
      */
     public boolean setRatingById(int id, float score) throws SQLException {
@@ -139,6 +139,61 @@ public class FilmDAO {
             
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setFloat(1, score);
+            
+            int rowsInserted = statement.executeUpdate();
+            
+            return rowsInserted > 0;
+        }
+        
+    }
+    
+    /**
+     * Adds rating by User
+     * 
+     * @param id The ID of film which use to get film's rating
+     * @param score The score of film which use to set film's score
+     * @param userId The name of User
+     * @return True if added successfully, else false
+     * @throws SQLException 
+     */
+    public boolean addRatingByUser(int id, float score, int userId) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "INSERT INTO FilmRating (film_id, user_id, score) VALUES (?, ?, ?)";
+            
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.setInt(2, userId);
+            statement.setFloat(3, score);
+            
+            int rowsInserted = statement.executeUpdate();
+            
+            return rowsInserted > 0;
+        }
+        
+    }
+    
+    /**
+     * Adds Film
+     * 
+     * @param title The title of Film
+     * @param releaseYear The released year of Film
+     * @param distributorId The ID of distributor
+     * @param videoPath The video's path
+     * @param posterPath The poster's path
+     * @return True if added successfully, else false
+     * @throws SQLException 
+     */
+    public boolean addFilm(String title, int releaseYear, int distributorId, String videoPath, String posterPath) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "INSERT INTO Film (title, release_year, distributor_id, video_path, poster_path) VALUES (?, ?, ?, ?, ?)";
+            
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, title);
+            statement.setInt(2, releaseYear);
+            statement.setInt(3, distributorId);
+            statement.setString(4, videoPath);
+            statement.setString(5, posterPath);
+
             
             int rowsInserted = statement.executeUpdate();
             
@@ -191,7 +246,7 @@ public class FilmDAO {
         ArrayList<Film> films = new ArrayList<>();
         
         try (Connection conn = DBConnection.getConnection()) {
-            String sql = "SELECT id, title, release_year, video_path, poster_path FROM Film";
+            String sql = "SELECT id, title, release_year, distributor_id, video_path, poster_path FROM Film";
             
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(sql);
@@ -200,11 +255,12 @@ public class FilmDAO {
                 int id = result.getInt("id");
                 String title = result.getString("title");
                 int releaseYear = result.getInt("release_year");
+                int distributorId = result.getInt("distributor_id");
                 String videoPath = result.getString("video_path");
                 String posterPath = result.getString("poster_path");
                 List<String> genres = getGenresById(id);
                 List<String> directors = getDirectorsById(id);
-                List<String> distributors = getDistributorsById(id);
+                List<String> distributors = getDistributorsById(distributorId);
                 
                 films.add(new Film(id, title, releaseYear, videoPath, posterPath, genres, directors, distributors));
             }
